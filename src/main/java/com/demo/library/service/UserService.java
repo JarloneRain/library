@@ -1,15 +1,19 @@
 package com.demo.library.service;
 
-import com.demo.library.controller.UserController;
-import com.demo.library.domain.User;
+import com.demo.library.entity.User;
 
 import java.util.List;
 
 public interface UserService {
-    List<User> findAll();
+    List<User> getAll();
 
-    List<User> searchUsers(String keyword);
+    User getOne(Integer id);
 
-    void register(UserController.UserJson userJson);
+    List<User> searchName(String keyword);
+
+    Integer modify(Integer id, String name, String password);
+    Integer register(String name, String password);
+
+    boolean logIn(Integer id, String password);
 
 }

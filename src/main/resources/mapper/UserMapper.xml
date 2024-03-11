@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.library.mapper.UserMapper">
+
+    <select id="get">
+        SELECT *
+        FROM users
+        <if test="id!=null">
+            WHERE id=#{id}
+        </if>
+    </select>
+    <select id="query">
+        SELECT *
+        FROM users
+        WHERE name LIKE #{keyword}
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users(admin, name, password)
+        VALUES (#{admin}, #{name}, #{password})
+    </insert>
+    <update id="update">
+        UPDATE users
+        SET admin    = #{admin},
+            name     = #{name},
+            password = #{password}
+        WHERE id = #{id};
+    </update>
+</mapper>

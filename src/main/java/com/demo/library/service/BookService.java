@@ -1,15 +1,12 @@
 package com.demo.library.service;
 
-import com.demo.library.controller.BookController;
-import com.demo.library.domain.Book;
+import com.demo.library.entity.Book;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface BookService {
-    List<Book>findAll();
-    List<Book>findAllByTitleContaining(String keyword);
-    void addBook(BookController.BookJson bookJson);
-    void borrowBook(Long id);
-    void returnBook(Long id);
+    Book getOne(Integer id);
+    List<Book> getAll();
+    List<Book> searchTitle(String keyword);
+    Integer addBook(String title);
 }

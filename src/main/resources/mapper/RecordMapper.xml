@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.library.mapper.RecordMapper">
+
+    <resultMap id="recordMap" type="com.demo.library.entity.Record">
+        <id property="recordId" column="reco_id"/>
+        <association property="reco" javaType="com.demo.library.entity.Reco">
+            <id property="id" column="reco_id"/>
+            <result property="userId" column="reco_user_id"/>
+            <result property="bookId" column="reco_book_id"/>
+        </association>
+        <collection property="cords" ofType="com.demo.library.entity.Cord">
+            <id property="id" column="cord_id"/>
+            <result property="recoId" column="cord_reco_id"/>
+            <result property="time" column="cord_time"/>
+            <result property="type" column="cord_type"/>
+        </collection>
+    </resultMap>
+
+    <select id="getRecord" resultMap="recordMap">
+        SELECT
+        reco.id AS reco_id,
+        reco.user_id AS reco_user_id,
+        reco.book_id AS reco_book_id,
+        cord.id AS cord_id,
+        cord.reco_id AS cord_reco_id,
+        cord.time AS cord_time,
+        cord.type AS cord_type
+        FROM recos reco
+        LEFT OUTER JOIN cords cord ON reco.id = cord.reco_id
+        <if test="id!=null">
+            WHERE reco.id=#{id}
+        </if>
+    </select>
+
+    <select id="getReco">
+        SELECT * FROM recos
+        <if test="id!=null">
+            WHERE id=#{id}
+        </if>
+    </select>
+
+    <select id="getCord">
+        SELECT * FROM cords
+        <if test="id!=null">
+            WHERE id=#{id}
+        </if>
+    </select>
+
+    <select id="query" resultMap="recordMap">
+        SELECT
+        reco.id AS reco_id,
+        reco.user_id AS reco_user_id,
+        reco.book_id AS reco_book_id,
+        cord.id AS cord_id,
+        cord.reco_id AS cord_reco_id,
+        cord.time AS cord_time,
+        cord.type AS cord_type
+        FROM recos reco
+        LEFT OUTER JOIN cords cord ON reco.id = cord.reco_id
+        <where>
+            <if test="bookId!=null">
+                AND book_id=#{bookId}
+            </if>
+            <if test="userId!=null">
+                AND user_id=#{userId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertReco" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO recos(user_id, book_id)
+        VALUES (#{userId}, #{bookId})
+    </insert>
+
+    <insert id="insertCord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO cords(reco_id, time, type)
+        VALUES (#{recoId}, #{time}, #{type})
+    </insert>
+</mapper>

@@ -23,7 +23,7 @@ If you have troubles in reading Chinese, please ask AI to translate for you.
 
 ## 实现功能
 
-- 接口文档展示（Swagger）。
+- 接口文档展示（Swagger）
 - 增删查改：
     * 用户：
         + 添加单个用户
@@ -52,10 +52,11 @@ If you have troubles in reading Chinese, please ask AI to translate for you.
 
 ### books
 
-| 列名    | 备注 |
-|-------|----|
-| id    | 自增 |
-| title |    |
+| 列名    | 备注       |
+|-------|----------|
+| id    | 自增       |
+| title |          |
+| lent  | 为真时表示被借出 |
 
 ### records
 
@@ -110,11 +111,13 @@ com.demo.library
 
 引入Spring Security，在进行一些操作时需要鉴权。
 
+增加异常处理切面，使得Controller在处理过程中发生异常时能够返回请示失败响应（如“图书不存在”）。
+
 单元测试。
 
 ## 实现功能
 
-- 接口文档展示（Swagger）。
+- 接口文档展示（Swagger）
 - 增删查改：
     * 用户：
         + ~~添加单个用户~~ **用户注册**
@@ -128,40 +131,48 @@ com.demo.library
     * 记录：
         + ~~生成借阅记录~~
         + ~~还书时将相应借阅记录改为还书~~
-        + 生成借书、还书、续借、挂失等不同类别的记录
-        + 浏览所有记录，**需要管理员权限**
+        + **生成借书、还书、续借、挂失等不同类别的记录**
+        + **管理员**浏览所有记录
         + ~~查询指定用户的所有记录~~  
           **管理员可查询任意用户记录，普通用户只能查询自己的记录**
         + ~~查询指定图书的所有记录~~  
-          **管理员能查看和指定图书相关的全部记录，普通用户只能查询和自己相关的记录**
+          **管理员能查看和指定图书相关的全部记录，普通用户查询和自己相关的记录**
 - 日志：在Service层中插入日志切面记录相关日志。
 
 ## 数据库结构
 
 ### users
 
-| 列名       | 备注           |
-|----------|--------------|
-| id       | 自增           |
-| name     |              |
-| password | 明文~~CSDN行为~~ |
+| 列名       | 备注 |
+|----------|----|
+| id       | 自增 |
+| name     |    |
+| password | 明文 |
 
 ### books
 
-| 列名    | 备注 |
-|-------|----|
-| id    | 自增 |
-| title |    |
+| 列名    | 备注                                                          |
+|-------|-------------------------------------------------------------|
+| id    | 自增                                                          |
+| title |                                                             |
+| state | 在库In the Library<br/>借出Lend Out<br/>遗失Not Found<br/>报废SCrap |
 
-### records
+### recos
 
-| 列名      | 备注              |
-|---------|-----------------|
-| id      | 自增              |
-| user_id | 外键：users中的id    |
-| book_id | 外键：books中的id    |
-| type    | 借书、还书、续借、挂失等    |
-| time    | 后端Controller层获取 |
+| 列名      | 备注           |
+|---------|--------------|
+| id      | 自增           |
+| user_id | 外键：users中的id |
+| book_id | 外键：books中的id |
+
+### cords
+
+| 列名      | 备注                                                                      |
+|---------|-------------------------------------------------------------------------|
+| id      | 自增                                                                      |
+| reco_id | 外键：recos中的id                                                            |
+| type    | 借书Borrow Book<br/>还书Return Book<br/>续借Renew Order<br/>挂失Report the Loss |
+| time    | 后端Service层调用一个Mapper获取                                                  |
 
 ## 代码结构
 

@@ -1,56 +1,38 @@
 package com.demo.library.service.impl;
 
-import com.demo.library.controller.BookController;
-import com.demo.library.domain.Book;
-import com.demo.library.domain.BookRepository;
+import com.demo.library.entity.Book;
+import com.demo.library.mapper.BookMapper;
 import com.demo.library.service.BookService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
-
-    @Autowired
-    BookRepository bookRepository;
+    final BookMapper bookMapper;
 
     @Override
-    public List<Book> findAll() {
-        return bookRepository.findAll();
+    public Book getOne(Integer id) {
+        List<Book> books = bookMapper.get(id);
+        return books.isEmpty() ? null : books.get(0);
     }
 
     @Override
-    public List<Book> findAllByTitleContaining(String keyword) {
-        return bookRepository.findByTitleContaining(keyword);
+    public List<Book> getAll() {
+        return bookMapper.get(null);
     }
 
     @Override
-    public void addBook(BookController.BookJson bookJson) {
-        bookRepository.save(new Book(bookJson.getTitle(), false));
+    public List<Book> searchTitle(String keyword) {
+        return bookMapper.query(keyword);
     }
 
     @Override
-    public void borrowBook(Long id) {
-        bookRepository.findById(id).ifPresentOrElse(
-                book -> {
-                    book.setLent(false);
-                    bookRepository.save(book);
-                }, () -> {
-                    throw new RuntimeException("The book id{" + id + "} is not exist.");
-                }
-        );
-    }
-
-    @Override
-    public void returnBook(Long id) {
-        bookRepository.findById(id).ifPresentOrElse(
-                book -> {
-                    book.setLent(false);
-                    bookRepository.save(book);
-                }, () -> {
-                    //Log
-                });
+    public Integer addBook(String title) {
+        Book book = new Book(null, title, "IL");
+        bookMapper.insert(book);
+        return book.getId();
     }
 }

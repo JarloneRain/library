@@ -1,27 +1,27 @@
 package com.demo.library.controller;
 
-import com.demo.library.domain.Record;
+import com.demo.library.entity.Record;
 import com.demo.library.service.RecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.util.List;
-import java.util.Set;
 
 @Tag(name = "Records")
 @RestController
 @RequestMapping("/records")
+@RequiredArgsConstructor
 public class RecordController {
-    @Autowired
-    RecordService recordService;
+    final RecordService recordService;
 
-    @Operation(summary = "Explore all the records.")
+    @Operation(summary = "[Admin]Explore all the records.")
     @GetMapping("/")
     public List<Record> getAllRecords() {
         return recordService.findAll();
@@ -32,7 +32,7 @@ public class RecordController {
     public List<Record> getAllUserRecordsRequest(
             @Parameter(name = "userId")
             @PathVariable
-            Long userId
+            Integer userId
     ) {
         return recordService.findAllByUserId(userId);
     }
@@ -42,47 +42,86 @@ public class RecordController {
     public List<Record> getAllBookRecordsRequest(
             @Parameter(name = "bookId")
             @PathVariable
-            Long bookId
+            Integer bookId
     ) {
         return recordService.findAllByBookId(bookId);
     }
 
     @Data
     @Schema
-    public static class BorrowRecordJson {
-        Timestamp borrowTime;
-        Long userId;
-        Long bookId;
+    public static class RecoJson {
+        Integer userId;
+        Integer bookId;
     }
 
     @Operation(summary = "Borrow a book.", description = "Implemented by POST necessary information.")
-    @PostMapping("/")
-    public String borrowRequest(
+    @PostMapping("/borrow")
+    public ResponseEntity borrowBookRequest(
             @Parameter(name = "borrowRecordJson")
             @RequestBody
-            BorrowRecordJson borrowRecordJson
+            RecoJson recoJson
     ) {
-        recordService.borrowBook(borrowRecordJson);
-        return "success";
+        try {
+            return new ResponseEntity(
+                    recordService.borrowBook(recoJson.getUserId(), recoJson.getBookId()),
+                    HttpStatus.CREATED);
+        } catch(RuntimeException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Data
     @Schema
-    public static class ReturnRecordJson {
-        Long recordId;
-        Timestamp returnTime;
+    public static class CordJson {
+        Integer recoId;
     }
 
-    @Operation(summary = "Return a book.", description = "Implemented by PUT necessary information.")
-    @PutMapping("/")
-    public String returnRequest(
-            @Parameter(name = "returnRecordJson")
+    @Operation(summary = "Return a book.", description = "Implemented by POST recoID.")
+    @PostMapping("/return")
+    public ResponseEntity returnBookRequest(
+            @Parameter(name = "cordJson")
             @RequestBody
-            ReturnRecordJson returnRecordJson
+            CordJson cordJson
     ) {
-        recordService.returnBook(returnRecordJson);
-        return "success";
+        try {
+            return new ResponseEntity(
+                    recordService.returnBook(cordJson.getRecoId()),
+                    HttpStatus.CREATED);
+        } catch(RuntimeException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
+    @Operation(summary = "Renew an order.", description = "Implemented by POST recoID.")
+    @PostMapping("/renew")
+    public ResponseEntity renewOrderRequest(
+            @Parameter(name = "cordJson")
+            @RequestBody
+            CordJson cordJson
+    ) {
+        try {
+            return new ResponseEntity(
+                    recordService.renewOrder(cordJson.getRecoId()),
+                    HttpStatus.CREATED);
+        } catch(RuntimeException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "Repost lost the book.", description = "Implemented by POST recoID.")
+    @PostMapping("/report")
+    public ResponseEntity reportLostRequest(
+            @Parameter(name = "cordJson")
+            @RequestBody
+            CordJson cordJson
+    ) {
+        try {
+            return new ResponseEntity(
+                    recordService.reportLost(cordJson.getRecoId()),
+                    HttpStatus.CREATED);
+        } catch(RuntimeException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }

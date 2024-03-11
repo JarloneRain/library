@@ -1,31 +1,51 @@
 package com.demo.library.service.impl;
 
-import com.demo.library.controller.UserController;
-import com.demo.library.domain.User;
-import com.demo.library.domain.UserRepository;
+import com.demo.library.entity.User;
+import com.demo.library.mapper.UserMapper;
 import com.demo.library.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    @Autowired
-    UserRepository userRepository;
+    final UserMapper userMapper;
 
     @Override
-    public List<User> searchUsers(String keyword) {
-        return userRepository.findByNameContaining(keyword);
+    public List<User> getAll() {
+        return userMapper.get(null);
     }
 
     @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public User getOne(Integer id) {
+        List<User> users = userMapper.get(id);
+        return users.isEmpty() ? null : users.get(0);
     }
 
     @Override
-    public void register(UserController.UserJson userJson) {
-        userRepository.save(new User(userJson.getName()));
+    public List<User> searchName(String keyword) {
+        return userMapper.query("%" + keyword + "%");
+    }
+
+    @Override
+    public Integer modify(Integer id, String name, String password) {
+        User old = userMapper.get(id).get(0);
+        return userMapper.update(new User(id, false,
+                name == null ? old.getName() : name,
+                password == null ? old.getPassword() : password));
+    }
+
+    @Override
+    public Integer register(String name, String password) {
+        User user = new User(null, false, name, password);
+        userMapper.insert(user);
+        return user.getId();
+    }
+
+    @Override
+    public boolean logIn(Integer id, String password) {
+        return userMapper.get(id).get(0).getPassword().equals(password);
     }
 }

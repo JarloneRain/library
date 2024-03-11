@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.library.mapper.BookMapper">
+    <select id="get">
+        SELECT *
+        FROM books
+        <if test="id!=null">
+            WHERE id = #{id}
+        </if>
+    </select>
+    <select id="query">
+        SELECT *
+        FROM books
+        WHERE title LIKE #{keyword};
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO books(title, state)
+        VALUES (#{title}, #{state});
+    </insert>
+    <update id="update">
+        UPDATE books
+        SET title = #{title},
+            state  = #{state}
+        WHERE id = #{id};
+    </update>
+</mapper>
