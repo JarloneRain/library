@@ -1,11 +1,9 @@
 package com.demo.library.service;
 
-import com.demo.library.entity.Book;
 import com.demo.library.entity.User;
 import com.demo.library.mapper.UserMapper;
 import com.demo.library.service.impl.UserServiceImpl;
 import org.assertj.core.util.Lists;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,10 +67,10 @@ public class UserServiceTest {
     @Test
     public void testLogIn() {
         Assertions.assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
-            Assertions.assertFalse(userService.logIn(65535, "password"), "incorrect id");
+            Assertions.assertFalse(userService.login(65535, "password"), "incorrect id");
         });
-        Assertions.assertFalse(userService.logIn(0, "wordpass"), "incorrect password");
-        Assertions.assertTrue(userService.logIn(0, "password"), "correct");
+        Assertions.assertFalse(userService.login(0, "wordpass"), "incorrect password");
+        Assertions.assertTrue(userService.login(0, "password"), "correct");
     }
 
     @Test

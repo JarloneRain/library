@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean logIn(Integer id, String password) {
+    public boolean login(Integer id, String password) {
         return userMapper.get(id).get(0).getPassword().equals(password);
     }
 }

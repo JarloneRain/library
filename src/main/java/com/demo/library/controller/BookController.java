@@ -2,12 +2,15 @@ package com.demo.library.controller;
 
 import com.demo.library.entity.Book;
 import com.demo.library.service.BookService;
+import com.demo.library.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.List;
 @RequestMapping(value = "/books")
 public class BookController {
     final BookService bookService;
+    final UserService userService;
 
     @Data
     @Schema
@@ -27,14 +31,17 @@ public class BookController {
     }
 
     @Operation(summary = "[Admin]Add a new book.", description = "Implemented by POST necessary information.")
-    @PostMapping("/")
-    public String addBookRequest(
+    @PostMapping("/add")
+    public ResponseEntity addBookRequest(
             @Parameter(name = "bookJson")
             @RequestBody
-            BookJson bookJson
+            BookJson bookJson,
+            @RequestAttribute("ID")
+            Integer ID
     ) {
-        bookService.addBook(bookJson.getTitle());
-        return "success";
+        return userService.getOne(ID).getAdmin()
+                ? new ResponseEntity(bookService.addBook(bookJson.getTitle()), HttpStatus.OK)
+                : new ResponseEntity(HttpStatus.FORBIDDEN);
     }
 
     @Operation(summary = "Get all the books.")

@@ -14,6 +14,6 @@ public interface UserService {
     Integer modify(Integer id, String name, String password);
     Integer register(String name, String password);
 
-    boolean logIn(Integer id, String password);
+    boolean login(Integer id, String password);
 
 }

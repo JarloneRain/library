@@ -26,7 +26,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> searchTitle(String keyword) {
-        return bookMapper.query(keyword);
+        return bookMapper.query("%" + keyword + "%");
     }
 
     @Override

@@ -177,5 +177,75 @@ com.demo.library
 ## 代码结构
 
 ```text
-TODO
+├───.idea
+│   ├───codeStyles
+│   ├───dataSources
+│   │   └───4fb4a1f6-c6d9-4c1f-9cb1-672c85c25fab
+│   │       └───storage_v2
+│   │           └───_src_
+│   │               └───database
+│   │                   ├───library.uyToCQ
+│   │                   │   └───schema
+│   │                   └───postgres.edMnLQ
+│   │                       └───schema
+│   └───inspectionProfiles
+├───.mvn
+│   └───wrapper
+├───src
+│   ├───main
+│   │   ├───java
+│   │   │   └───com
+│   │   │       └───demo
+│   │   │           └───library
+│   │   │               ├───aspect
+│   │   │               │   └───exception
+│   │   │               │       ├───conroller
+│   │   │               │       └───service
+│   │   │               ├───config
+│   │   │               ├───controller
+│   │   │               ├───entity
+│   │   │               ├───mapper
+│   │   │               ├───service
+│   │   │               │   └───impl
+│   │   │               └───utils
+│   │   └───resources
+│   │       └───mapper
+│   └───test
+│       └───java
+│           └───com
+│               └───demo
+│                   └───library
+│                       ├───mapper
+│                       └───service
+└───target
+    ├───classes
+    │   ├───com
+    │   │   └───demo
+    │   │       └───library
+    │   │           ├───aspect
+    │   │           │   └───exception
+    │   │           │       └───service
+    │   │           ├───config
+    │   │           ├───controller
+    │   │           ├───entity
+    │   │           ├───mapper
+    │   │           ├───service
+    │   │           │   └───impl
+    │   │           └───utils
+    │   └───mapper
+    ├───generated-sources
+    │   └───annotations
+    ├───generated-test-sources
+    │   └───test-annotations
+    └───test-classes
+        └───com
+            └───demo
+                └───library
+                    ├───mapper
+                    └───service
 ```
+
+
+经过简单测试上述功能已基本实现，但因要离职了所以没来得及添加针对Controller的单元测试，以后也不打算写Java了所有这个项目也不会再更新了。
+
+——2024.03.14

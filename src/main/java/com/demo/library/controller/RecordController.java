@@ -2,6 +2,7 @@ package com.demo.library.controller;
 
 import com.demo.library.entity.Record;
 import com.demo.library.service.RecordService;
+import com.demo.library.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,31 +21,45 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecordController {
     final RecordService recordService;
+    final UserService userService;
 
     @Operation(summary = "[Admin]Explore all the records.")
     @GetMapping("/")
-    public List<Record> getAllRecords() {
-        return recordService.findAll();
+    public ResponseEntity<List<Record>> getAllRecords(
+            @RequestAttribute("ID")
+            Integer ID
+    ) {
+        return userService.getOne(ID).getAdmin() ?
+                new ResponseEntity<>(recordService.findAll(), HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     @Operation(summary = "Explore all records of user.")
     @GetMapping("/user/{userId}")
-    public List<Record> getAllUserRecordsRequest(
+    public ResponseEntity<List<Record>> getAllUserRecordsRequest(
             @Parameter(name = "userId")
             @PathVariable
-            Integer userId
+            Integer userId,
+            @RequestAttribute("ID")
+            Integer ID
     ) {
-        return recordService.findAllByUserId(userId);
+        return userService.getOne(ID).getId().equals(userId) ?
+                new ResponseEntity<>(recordService.findAllByUserId(userId), HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    @Operation(summary = "Explore all records of book.")
+    @Operation(summary = "Explore all/own records of book.")
     @GetMapping("/book/{bookId}")
     public List<Record> getAllBookRecordsRequest(
             @Parameter(name = "bookId")
             @PathVariable
-            Integer bookId
+            Integer bookId,
+            @RequestAttribute
+            Integer ID
     ) {
-        return recordService.findAllByBookId(bookId);
+        return recordService.findAllByBookId(bookId).stream().filter(r ->
+                userService.getOne(ID).getAdmin() || r.getReco().getUserId().equals(ID)
+        ).toList();
     }
 
     @Data
@@ -59,9 +74,13 @@ public class RecordController {
     public ResponseEntity borrowBookRequest(
             @Parameter(name = "borrowRecordJson")
             @RequestBody
-            RecoJson recoJson
+            RecoJson recoJson,
+            @RequestAttribute("ID")
+            Integer ID
     ) {
         try {
+            if(!recoJson.getUserId().equals(ID))
+                throw new RuntimeException("Borrow books instead of others is not allowed.");
             return new ResponseEntity(
                     recordService.borrowBook(recoJson.getUserId(), recoJson.getBookId()),
                     HttpStatus.CREATED);
