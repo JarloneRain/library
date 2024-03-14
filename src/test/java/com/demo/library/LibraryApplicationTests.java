@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-
-//TODO:增加针对Service和Controller层的测试用例
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class LibraryApplicationTests {
